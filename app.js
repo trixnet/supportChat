@@ -1,4 +1,3 @@
-//Test fork
 var globals=require("./models/globals.js");
 var config=globals.config;
 var express = globals.express;

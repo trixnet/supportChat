@@ -21,6 +21,10 @@ var connection=function(socket) {
         mongo.connect(config.mongo_url, function(err, db) {
             if (err) {
                 console.log("MOngodbConnection Failed: ", err);
+                io.sockets.connected[socket.id].emit('chtp2p-received', {
+                    msg: "failed to send msg",
+                    status:false
+                });
             } else {
                 var users = db.collection('users');
                 users.insertMany([msg], function(err, result) {
@@ -28,11 +32,13 @@ var connection=function(socket) {
                     if (err) {
                         console.log("MOngodbQuery Failed: ", err);
                         io.sockets.connected[socket.id].emit('chtp2p-received', {
-                            msg: "failed to send msg",status:false
+                            msg: "failed to send msg",
+                            status:false
                         });
                     } else {
                         io.sockets.connected[socket.id].emit('chtp2p-received', {
-                            msg: "message sent",status:true
+                            msg: "message sent",
+                            status:true
                         });
                     }
                 });
