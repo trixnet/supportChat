@@ -5,7 +5,7 @@ var jwt = globals.jwt;
 var mongo = globals.mongoClient;
 var io = globals.io;
 
-var startChat=function(req, res) {
+var startChat = function(req, res) {
     req.checkBody({
         'email': {
             notEmpty: true,
@@ -23,10 +23,13 @@ var startChat=function(req, res) {
     } else {
         mongo.connect(config.mongo_url, function(err, db) {
             if (err) {
-                console.log("MOngodbConnection Failed:[controllers][startChat1] ", err);
+                console.log("MOngodbConnection Failed:[controllers]\
+                    [startChat1]",err);
             } else {
                 var users = db.collection('users');
-                users.find({email:req.body["email"]}, function(err, result) {
+                users.find({
+                    email: req.body["email"]
+                }, function(err, result) {
                     db.close();
                     if (err) {
                         console.log("MOngodbQuery Failed: ", err);
@@ -34,16 +37,17 @@ var startChat=function(req, res) {
                             error: "login error"
                         });
                     } else {
-                        console.log(req.hostname);
+                        console.log("MongoUser",result);
                         req.session.email = req.body.email;
                         var token = jwt.sign({
                             email: req.body.email
                         }, config.IO_SECRET, {
                             expiresIn: "2days"
                         });
-                        req.session.token=token;
+                        req.session.token = token;
                         return res.status(200).json({
-                            login: "ok",token:token
+                            login: "ok",
+                            token: token
                         });
                     }
                 });
@@ -53,6 +57,6 @@ var startChat=function(req, res) {
     }
 }
 
-module.exports={
-    startChat:startChat
+module.exports = {
+    startChat: startChat
 }
